@@ -33,6 +33,7 @@ public class Campsite_DB_Test extends AppCompatActivity
     private String[] items;
     private List<Integer> CampsiteIds;
     private int CampsiteIndex;
+    private static final boolean DEBUG_UPDATE = false;
 
     /**
      * <h1> Create this activity and grab hold of the widgets.</h1>
@@ -63,7 +64,9 @@ public class Campsite_DB_Test extends AppCompatActivity
         GrillCBGui = findViewById(R.id.GrillCB);
         RestroomsCBGui = findViewById(R.id.RestroomsCB);
         CampsiteDetailsGui = findViewById(R.id.CampsiteDetailsGui);
-        UpdateCampsiteIds();
+
+        if(DEBUG_UPDATE)
+            UpdateCampsiteIds();
 
 
     }
@@ -85,9 +88,9 @@ public class Campsite_DB_Test extends AppCompatActivity
 
     public void CreateDBBtn(View view)
     {
-        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
-        dbHandler.createDatabaseFromAsset(true);
-        UpdateCampsiteIds();
+//        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
+//        dbHandler.createDatabaseFromAsset(true);
+//        UpdateCampsiteIds();
 
     }
 
