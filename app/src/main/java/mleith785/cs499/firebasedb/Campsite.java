@@ -1,9 +1,10 @@
 package mleith785.cs499.firebasedb;
 
 import android.graphics.Bitmap;
+import com.google.firebase.database.IgnoreExtraProperties;
 
-import java.sql.Blob;
 
+@IgnoreExtraProperties
 public class Campsite
 {
     public int CampId;
