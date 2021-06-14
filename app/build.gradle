@@ -47,3 +47,9 @@ dependencies {
 
 
 }
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.deprecation = true
+    }
+}

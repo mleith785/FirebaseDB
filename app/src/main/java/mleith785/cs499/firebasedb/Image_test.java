@@ -3,7 +3,7 @@ package mleith785.cs499.firebasedb;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ProgressDialog;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -78,12 +78,6 @@ public class Image_test extends AppCompatActivity
 
         DisHereCampsite = new Campsite();
 
-        //Gpt the site, let's see if this thing has an image on it, if it does populate the widget
-        //with that.
-        if (null != DisHereCampsite.BM)
-        {
-            CampImageGui.setImageBitmap(DisHereCampsite.BM);
-        }
 
         //Update those widgets from our campsite
         CampDetailNameGui.setText(DisHereCampsite.CampName);
@@ -149,11 +143,8 @@ public class Image_test extends AppCompatActivity
 
     public void UploadBtn(View view)
     {
-        final ProgressDialog pd = new ProgressDialog(this);
         //progress bar and other info from
         //https://www.youtube.com/watch?v=CQ5qcJetYAI
-        pd.setTitle("Uploading Image...");
-        pd.show();
 
         Bitmap BM;
         BM = ((BitmapDrawable)CampImageGui.getDrawable()).getBitmap();
@@ -175,7 +166,6 @@ public class Image_test extends AppCompatActivity
             @Override
             public void onFailure(@NonNull @NotNull Exception e)
             {
-                pd.dismiss();
                 Log.w(TAG, "failed to upload picture");
                 Toast.makeText(getApplicationContext(),"Failed to upload", Toast.LENGTH_LONG).show();
             }
@@ -184,16 +174,8 @@ public class Image_test extends AppCompatActivity
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
             {
-                pd.dismiss();
+
                 Snackbar.make(findViewById(android.R.id.content),"Image Uploaded.",Snackbar.LENGTH_LONG).show();
-            }
-        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>()
-        {
-            @Override
-            public void onProgress(@NonNull @NotNull UploadTask.TaskSnapshot snapshot)
-            {
-                double progressPercent = (100.00* snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                pd.setMessage("Percentage: " + (int)progressPercent+"%");
             }
         });
 

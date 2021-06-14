@@ -93,8 +93,8 @@ public class Campsite_DB_Test extends AppCompatActivity
         if(DEBUG_UPDATE)
             UpdateCampsiteIds();
 
-        CampsiteList = new ArrayList();
-        CampsiteStrIds = new ArrayList();
+        CampsiteList = new ArrayList<Campsite>();
+        CampsiteStrIds = new ArrayList<String>();
 
         UpdateCampsiteIds();
 
@@ -248,13 +248,7 @@ public class Campsite_DB_Test extends AppCompatActivity
     }
 
 
-    private void SearchCampsiteById(int id)
-    {
-        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
-        Campsite site_q = dbHandler.SearchCampsiteById(id);
-        PopulateSearchResults(site_q);
 
-    }
 
 
     private void PopulateSearchResults(Campsite campsite)

@@ -18,7 +18,7 @@ public class Campsite
     public String Details;
     public double latitude;
     public double longitude;
-    public Bitmap BM;
+    public String Picture_Storage;
 
     public Campsite()
     {
@@ -30,6 +30,7 @@ public class Campsite
         FeatGrill = false;
         FeatRestroom = false;
         Details = "No Details";
+        Picture_Storage=null;
 
     }
 
@@ -48,7 +49,7 @@ public class Campsite
         Details = details;
         latitude = lat;
         longitude = longy;
-        BM = null;
+        Picture_Storage = null;
     }
 
     public String ConvertFeatures2String()
