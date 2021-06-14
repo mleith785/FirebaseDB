@@ -22,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import static android.content.ContentValues.TAG;
@@ -92,24 +93,49 @@ public class Campsite_DB_Test extends AppCompatActivity
             UpdateCampsiteIds();
 
         CampsiteList = new ArrayList();
+        CampsiteIds = new ArrayList();
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Campsites");
-        myRef.addValueEventListener(valueEventListener);
+        Query query = FirebaseDatabase.getInstance().getReference("Campsites")
+                .orderByChild("CampId");
+
+        myRef.addValueEventListener(GetNumCampsites);
 
 
     }
+
+    ValueEventListener GetNumCampsites = new ValueEventListener()        {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot)
+        {
+            if (dataSnapshot.exists()){
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Campsite single_site = snapshot.getValue(Campsite.class);
+                    CampsiteIds.add(single_site.CampId);
+                }
+            }
+//                Log.d(TAG, "Value is: " + value);
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError error)
+        {
+            // Failed to read value
+            Log.w(TAG, "Failed to read value.", error.toException());
+        }
+    };
 
     ValueEventListener valueEventListener = new ValueEventListener()        {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot)
         {
-            //Campsite data_read_site = dataSnapshot.getValue(Campsite.class);
-                CampsiteList.clear();
                 if (dataSnapshot.exists()){
                     for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                         Campsite single_site = snapshot.getValue(Campsite.class);
-                        CampsiteList.add(single_site);
+//                        CampsiteList.add(single_site);
+                        PopulateSearchResults(single_site);
                     }
                 }
 //                Log.d(TAG, "Value is: " + value);
@@ -149,6 +175,7 @@ public class Campsite_DB_Test extends AppCompatActivity
 
     public void BtnPrevGui(View view)
     {
+
         String campsite_id_text = CampsiteIdGui.getText().toString();
         if (0 != campsite_id_text.compareTo("Auto Assigned"))
         {
@@ -162,9 +189,14 @@ public class Campsite_DB_Test extends AppCompatActivity
             CampsiteIndex=CampsiteIds.size()-1;
         }
 
-        int campsite_id = CampsiteIds.get(CampsiteIndex);
-        SearchCampsiteById(campsite_id);
+//This works
+//        Query query = FirebaseDatabase.getInstance().getReference("Campsites")
+//                .orderByChild("CampCity").equalTo("Prior Lake");
 
+        Query query = FirebaseDatabase.getInstance().getReference("Campsites")
+                .orderByChild("CampId").equalTo(CampsiteIds.get(CampsiteIndex));
+
+        query.addListenerForSingleValueEvent(valueEventListener);
 
     }
 
@@ -185,7 +217,11 @@ public class Campsite_DB_Test extends AppCompatActivity
         }
 
         int campsite_id = CampsiteIds.get(CampsiteIndex);
-        SearchCampsiteById(campsite_id);
+        Query query = FirebaseDatabase.getInstance().getReference("Campsites")
+                .orderByChild("CampId").equalTo(CampsiteIds.get(CampsiteIndex));
+
+        query.addListenerForSingleValueEvent(valueEventListener);
+        //SearchCampsiteById(campsite_id);
     }
 
 
