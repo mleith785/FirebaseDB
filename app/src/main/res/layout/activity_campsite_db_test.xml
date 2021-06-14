@@ -294,11 +294,11 @@
                     android:text="Camp Details" />
 
                 <Button
-                    android:id="@+id/FavoriteBtnGui"
+                    android:id="@+id/UpdateBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Favorites"
-                    android:onClick = "GoToFavorites"/>
+                    android:onClick="UpdateRecBtn"
+                    android:text="Update" />
             </TableRow>
         </TableLayout>
     </LinearLayout>

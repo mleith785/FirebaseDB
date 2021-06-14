@@ -54,7 +54,7 @@ public class Campsite_DB_Test extends AppCompatActivity
 
     //ALL THE CHANGES HAPPEN HERE FOR CS499
     private static final boolean DEBUG_UPDATE = false;
-
+    private Campsite CurrentCampsite;
 
     private List<Campsite> CampsiteList;
     private FirebaseDatabase database;
@@ -131,7 +131,9 @@ public class Campsite_DB_Test extends AppCompatActivity
                 if (dataSnapshot.exists()){
 
                     Campsite single_site = dataSnapshot.getValue(Campsite.class);
-                    PopulateSearchResults(single_site);
+                    CurrentCampsite = single_site;
+                    String site_key = dataSnapshot.getKey();
+                    PopulateSearchResults(single_site, site_key);
                 }
 //                Log.d(TAG, "Value is: " + value);
 
@@ -144,13 +146,26 @@ public class Campsite_DB_Test extends AppCompatActivity
             Log.w(TAG, "Failed to read value.", error.toException());
         }
     };
-//
-//    public void GoToFavorites(View view)
-//    {
-//        Intent intent = new Intent(this, FavoritesActivity.class);
-//        startActivity(intent);
-//
-//    }
+
+    public void UpdateRecBtn(View view)
+    {
+        //Grab the data from the form for updating:
+
+
+        CurrentCampsite.CampName = CampsiteNameGui.getText().toString();
+        CurrentCampsite.CampCity = CampsiteCityGui.getText().toString();
+        CurrentCampsite.CampLoc = CampsiteLocationGui.getText().toString();
+        //CurrentCampsite.AvgRating = CampsiteAvgRatingGui.value;
+        CurrentCampsite.FeatRiverside =  RiversideCBGui.isChecked();
+        CurrentCampsite.FeatGrill = GrillCBGui.isChecked();
+        CurrentCampsite.FeatRestroom = RestroomsCBGui.isChecked();
+        CurrentCampsite.Details = CampsiteDetailsGui.getText().toString();
+
+        String campsite_key = CampsiteStrIds.get(CampsiteIndex);
+        FirebaseDatabase.getInstance().getReference().child("Campsites").child(campsite_key).setValue(CurrentCampsite);
+
+
+    }
 
     public void SearchByName(View view)
     {
@@ -169,7 +184,8 @@ public class Campsite_DB_Test extends AppCompatActivity
                     for(DataSnapshot snapshot: dataSnapshot.getChildren())
                     {
                         Campsite single_site = snapshot.getValue(Campsite.class);
-                        PopulateSearchResults(single_site);
+                        String campsite_key = snapshot.getKey();
+                        PopulateSearchResults(single_site, campsite_key);
                     }
                    // Campsite found_by_name = dataSnapshot.getValue(Campsite.class);
                    // PopulateSearchResults(found_by_name);
@@ -251,11 +267,11 @@ public class Campsite_DB_Test extends AppCompatActivity
 
 
 
-    private void PopulateSearchResults(Campsite campsite)
+    private void PopulateSearchResults(Campsite campsite, String campsite_key)
     {
         if (null != campsite)
         {
-            CampsiteIdGui.setText(String.valueOf(campsite.CampId));
+            CampsiteIdGui.setText(campsite_key);
             CampsiteNameGui.setText(campsite.CampName);
             CampsiteCityGui.setText(campsite.CampCity);
             CampsiteLocationGui.setText(campsite.CampLoc);
@@ -286,7 +302,7 @@ public class Campsite_DB_Test extends AppCompatActivity
 
     public void AddRecord(View view)
     {
-        Campsite new_site = new Campsite(0,
+        Campsite new_site = new Campsite(
                 CampsiteNameGui.getText().toString(),
                 CampsiteCityGui.getText().toString(),
                 CampsiteLocationGui.getText().toString(),
@@ -338,7 +354,7 @@ public class Campsite_DB_Test extends AppCompatActivity
         Query query = FirebaseDatabase.getInstance().getReference("Campsites");
 
         myRef.addValueEventListener(GetNumCampsites);
-        PopulateSearchResults(null);
+        PopulateSearchResults(null,null);
     }
 
 }

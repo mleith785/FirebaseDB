@@ -7,7 +7,6 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class Campsite
 {
-    public int CampId;
     public String CampName;
     public String CampCity;
     public String CampLoc;
@@ -35,10 +34,10 @@ public class Campsite
     }
 
 
-    public Campsite(int id, String name, String city, String loc, float avg_rating, boolean feat_river
+    public Campsite(String name, String city, String loc, float avg_rating, boolean feat_river
             , boolean feat_g, boolean feat_rest, String details, double lat, double longy)
     {
-        CampId = id;
+
         CampName = name;
         CampCity = city;
         CampLoc = loc;
