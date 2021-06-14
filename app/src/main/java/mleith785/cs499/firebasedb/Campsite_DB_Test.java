@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -277,10 +278,21 @@ public class Campsite_DB_Test extends AppCompatActivity
                 RiversideCBGui.isChecked(),
                 GrillCBGui.isChecked(),
                 RestroomsCBGui.isChecked(),
-                CampsiteDetailsGui.getText().toString());
-        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
-        dbHandler.AddCampsite(new_site);
-        UpdateCampsiteIds();
+                CampsiteDetailsGui.getText().toString(),
+                3.0f,4.0f
+                );
+//        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
+//        dbHandler.AddCampsite(new_site);
+//        UpdateCampsiteIds();
+
+        //Firebase get a key for the data
+        //get the key for the campsite
+        myRef = database.getReference("Campsites");
+        String new_add_id = myRef.push().getKey();
+        //Now write to the database
+        myRef.child(new_add_id).setValue(new_site);
+        Toast.makeText(this, "campsite added", Toast.LENGTH_LONG).show();
+
 
 
     }

@@ -33,15 +33,6 @@ public class Campsite
 
     }
 
-    //Kept this constructor just for legacy reasons
-    public Campsite(int id, String name, String city, String loc, float avg_rating, boolean feat_river
-            , boolean feat_g, boolean feat_rest, String details)
-    {
-
-        new Campsite(id, name, city, loc, avg_rating, feat_river,
-         feat_g, feat_rest, details, 0.0, 0.0);
-
-    }
 
     public Campsite(int id, String name, String city, String loc, float avg_rating, boolean feat_river
             , boolean feat_g, boolean feat_rest, String details, double lat, double longy)
