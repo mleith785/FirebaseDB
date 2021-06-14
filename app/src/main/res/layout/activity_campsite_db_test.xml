@@ -290,8 +290,8 @@
                     android:id="@+id/CreateDBBtnGui"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="CreateDB"
-                    android:onClick = "CreateDBBtn"/>
+                    android:onClick="CampDetailsBtn"
+                    android:text="Camp Details" />
 
                 <Button
                     android:id="@+id/FavoriteBtnGui"

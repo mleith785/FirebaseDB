@@ -183,11 +183,10 @@ public class Campsite_DB_Test extends AppCompatActivity
         });
     }
 
-    public void CreateDBBtn(View view)
+    public void CampDetailsBtn(View view)
     {
-//        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
-//        dbHandler.createDatabaseFromAsset(true);
-//        UpdateCampsiteIds();
+        Intent intent = new Intent(this, Image_test.class);
+        startActivity(intent);
 
     }
 
