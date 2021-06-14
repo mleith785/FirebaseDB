@@ -152,6 +152,13 @@
 
         </TableLayout>
 
+        <Button
+            android:id="@+id/uploadbtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="UploadBtn"
+            android:text="UploadBtn" />
+
     </LinearLayout>
 
 </ScrollView>
