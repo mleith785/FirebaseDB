@@ -1,5 +1,6 @@
 package mleith785.cs499.firebasedb;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -24,6 +25,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,6 +55,9 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
     private TextView CampNameCityMapGui;
     private TextView CampSearchLocLatGui;
     private TextView CampSearchLocLongGui;
+
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
 
 
@@ -108,7 +120,7 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
             {
                 LastMarker.remove();
             }
-            LastMarker = mMap.addMarker(new MarkerOptions().position(their_new_loc).title("You Here? Ya.."));
+            LastMarker = mMap.addMarker(new MarkerOptions().position(their_new_loc).title("Current Location"));
 
             Geocoder gcd = new Geocoder(this, Locale.getDefault());
             //Now let's get the address based on their location or something
@@ -160,25 +172,45 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
 
     public void searchSiteLocation(View view)
     {
-        //todo bring this in later
-//        //OK like let's search this city and see if they have anything
-//        CampSearchCriteria searchy=new CampSearchCriteria("",CityName,false,false,false);
-//
-//        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
-//        boolean found_sites = dbHandler.SearchForCampsites(searchy);
-//        if(!found_sites)
-//        {
-//            int duration = Toast.LENGTH_SHORT;
-//            Context context = getApplicationContext();
-//            Toast toast = Toast.makeText(context, "No Campsites Found!", duration);
-//            toast.show();
-//        }
-//        else
-//        {
-//            Intent intent = new Intent(this, MapListNavActivity.class);
-//            intent.putExtra("Called By", "search");
-//            intent.putExtra("CampSearchObj", searchy);
-//            startActivity(intent);
-//        }
+        //Add the search criteria using firebase
+        Query query = FirebaseDatabase.getInstance().getReference("Campsites")
+                .orderByChild("CampCity")
+                .equalTo(CityName);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener(){
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if( dataSnapshot.exists())
+                {
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren())
+                    {
+                        Intent intent = new Intent(getApplicationContext(), MapListNavActivity.class);
+                        intent.putExtra("Called By", "search");
+                        //TODO need to make this work better too
+
+                        //intent.putExtra("CampSearchObj", searchy);
+                        startActivity(intent);
+                    }
+
+
+                }
+                else
+                {
+                    int duration = Toast.LENGTH_SHORT;
+                    Context context = getApplicationContext();
+                    Toast toast = Toast.makeText(context, "No Campsites Found!", duration);
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error)
+            {
+
+            }
+        });
+
     }
 }
