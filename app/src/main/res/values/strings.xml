@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">FirebaseDB</string>
+    <string name="app_name">Campsite Locator 2</string>
+    <string name="login_image">Login Image</string>
+    <string name="title_activity_map_list_nav">Map</string>
+    <string name="title_activity_add_site_map">Map</string>
+    <string name="generic_status_fmt">User: %s (%s)</string>
+    <string name="firebase_status_fmt">Firebase UID: %s</string>
 </resources>

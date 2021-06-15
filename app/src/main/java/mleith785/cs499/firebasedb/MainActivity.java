@@ -2,77 +2,90 @@ package mleith785.cs499.firebasedb;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.content.Intent;
 import android.widget.Button;
+import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import static android.content.ContentValues.TAG;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity
 {
 
 
-    private Button readDbBtn;
-    private Button writeDbBtn;
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
+    /**
+     * <h1> Login with firebase</h1>
+     * launches firebase activity for login vs using the saved file
+     * @param view
+     */
+    public void doFirebaseLogin(View view)
+    {
+        Intent intent = new Intent(this, FirebaseLoginActivity.class);
+        startActivity(intent);
+    }
+
+
+    private TextView username_widget;
+    private TextView password_widget;
+    private Button login_btn_widget;
+    private Button googleSignInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("message");
         setContentView(R.layout.activity_main);
-
-        // Read from the database
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "Value is: " + value);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
     }
 
-    public void doWriteDbClick(View view)
+
+
+    /**
+     * This allows the app to be killed when exited.  Taken from
+     * https://stackoverflow.com/questions/17719634/how-to-exit-an-android-app-programmatically
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("Exit Application?");
+            alertDialogBuilder
+                    .setMessage("Click yes to exit!")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes",
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    moveTaskToBack(true);
+                                    android.os.Process.killProcess(android.os.Process.myPid());
+                                    System.exit(1);
+                                }
+                            })
 
+                    .setNegativeButton("No", new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int id)
+                        {
 
-        myRef.setValue("Hello, World!");
+                            dialog.cancel();
+                        }
+                    });
 
+            androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
 
+        return true;
     }
-
-    public void doReadDbClick(View view)
-    {
-
-
-    }
-
-    public void doJumpToCampsiteTest(View view)
-    {
-        Intent intent = new Intent(this, Campsite_DB_Test.class);
-        startActivity(intent);
-
-
-    }
-
-
 }
