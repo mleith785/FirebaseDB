@@ -2,6 +2,7 @@ package mleith785.cs499.firebasedb;
 
 
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
@@ -18,6 +19,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +91,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         CampAverageRatingMapGui = findViewById(R.id.CampAverageRatingMapGui);
         CampFeatureNavMapGui = findViewById(R.id.CampFeatureNavMapGui);
         CampDetailsNavMapGui = findViewById(R.id.CampDetailsNavMapGui);
+        CampsiteListWithMarkers = new ArrayList<>();
 
 
     }
@@ -101,7 +110,8 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
     {
 
         mMap = googleMap;
-        CampSearchCriteria searchy=null;
+        String CityName;
+
         //This can be called by favorites or by list, let's look for that
         Intent i = getIntent();
         String city_name;
@@ -110,40 +120,60 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
             //This activity passes us a search object, so lets get that
             //This serializable bidness taken from
             //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
-            searchy = (CampSearchCriteria)i.getSerializableExtra("CampSearchObj");
+            CityName = (String)i.getSerializableExtra("CityStr");
+            Query query = FirebaseDatabase.getInstance().getReference("Campsites")
+                    .orderByChild("CampCity")
+                    .equalTo(CityName);
 
-        }
+            query.addListenerForSingleValueEvent(new ValueEventListener(){
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+                    if( dataSnapshot.exists())
+                    {
+                        for(DataSnapshot snapshot: dataSnapshot.getChildren())
+                        {
+                            Campsite single_site = snapshot.getValue(Campsite.class);
+                            addMapPins(single_site);
+                        }
 
 
+                    }
+                    else
+                    {
+                        int duration = Toast.LENGTH_SHORT;
+                        Context context = getApplicationContext();
+                        Toast toast = Toast.makeText(context, "No Campsites Found!", duration);
+                        toast.show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error)
+                {
+                    //TODO filll this out with a toast
+                }
+            });
+                                                 }
         // Move to the default TC-612 area
         LatLng Twin_Cities = new LatLng(44.978905, -93.2658082);
 
         //Zoom this thing to TC metro.
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Twin_Cities, 9.0f));
 
-        //Add pins onto the map
+        //Set some callbacks, must go here vs on create
+        mMap.setOnMarkerClickListener(this);
 
-//        TODO: change this to use the firebase database
-//        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
-//        dbHandler.UpdateCampsiteList(searchy);
-//        CampsiteList = dbHandler.copyCampsiteList();
+    }
 
-        CampsiteListWithMarkers = new ArrayList<>();
+    public void addMapPins(Campsite site)
+    {
+        LatLng site_pin = new LatLng(site.latitude, site.longitude);
+        String site_name = site.CampName;
+        Marker mac = mMap.addMarker(new MarkerOptions().position(site_pin).title(site_name));
 
-        //TODO this is breaking here because the list is down.
-        //TODO get the string of the city to look for at this location and try to find
-        //it.
-        //Got the list, now lets add those silly pins
-        for (Campsite site : CampsiteList)
-        {
-            LatLng site_pin = new LatLng(site.latitude, site.longitude);
-            String site_name = site.CampName;
-            Marker mac = mMap.addMarker(new MarkerOptions().position(site_pin).title(site_name));
-
-            //Add this to our list of campsites with markers to use on the widgets
-            CampsiteListWithMarkers.add(new CampsiteWithMarkers(site, mac));
-        }
-
+        //Add this to our list of campsites with markers to use on the widgets
+        CampsiteListWithMarkers.add(new CampsiteWithMarkers(site, mac));
 
         //Set some callbacks, must go here vs on create
         mMap.setOnMarkerClickListener(this);

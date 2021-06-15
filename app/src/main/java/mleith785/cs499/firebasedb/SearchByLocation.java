@@ -190,7 +190,7 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
                         intent.putExtra("Called By", "search");
                         //TODO need to make this work better too
 
-                        //intent.putExtra("CampSearchObj", searchy);
+                        intent.putExtra("CityStr", CityName);
                         startActivity(intent);
                     }
 
@@ -208,7 +208,7 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
             @Override
             public void onCancelled(DatabaseError error)
             {
-
+                //TODO filll this out with a toast
             }
         });
 
