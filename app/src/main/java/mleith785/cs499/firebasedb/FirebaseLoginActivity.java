@@ -190,8 +190,8 @@ public class FirebaseLoginActivity extends AppCompatActivity
     public void ContinueToAppClick(View view)
     {
         //Login is successful, launch the next activity
-        //Intent intent = new Intent(this, HomePageActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, HomePageActivity.class);
+        startActivity(intent);
 
     }
 }

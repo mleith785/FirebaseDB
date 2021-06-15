@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="mleith785.cs499.firebasedb">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,15 +10,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FirebaseDB">
-        <activity android:name=".FirebaseLoginActivity"></activity>
-        <activity android:name=".Image_test" />
-        <activity android:name=".Campsite_DB_Test" />
+<meta-data
+    android:name="com.google.android.geo.API_KEY"
+    android:value="${MAPS_API_KEY}" />
+
+        <activity android:name=".SearchByLocation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".HomePageActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FirebaseLoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Image_test"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Campsite_DB_Test"
+            android:screenOrientation="portrait"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            android:screenOrientation="portrait"
         </activity>
     </application>
 
