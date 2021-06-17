@@ -2,7 +2,6 @@ package mleith785.cs499.firebasedb;
 
 
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
@@ -25,8 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,33 +33,32 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
 
     private GoogleMap mMap;
     //Use this to get the list from the DB handler
-    private List<Campsite> CampsiteList;
-    private List<CampsiteWithMarkers> CampsiteListWithMarkers;
-    private int CurrentCampsiteIndex;
-    TextView CampNameNavMapGui;
-    TextView CampNameCityMapGui;
-    TextView CampLatMapGui;
-    TextView CampLongMapGui;
-    TextView CampAverageRatingMapGui;
-    TextView CampFeatureNavMapGui;
-    TextView CampDetailsNavMapGui;
+    private List<CampsiteMarkersKeys> CampsiteListWithMarkers;
 
-    Marker LastChosenMarker;
-
+    private TextView CampNameNavMapGui;
+    private TextView CampNameCityMapGui;
+    private TextView CampLatMapGui;
+    private TextView CampLongMapGui;
+    private TextView CampAverageRatingMapGui;
+    private TextView CampFeatureNavMapGui;
+    private TextView CampDetailsNavMapGui;
+    private Marker LastChosenMarker;
     /**
      * <h1>Private class only used here for managing sites</h1>
      * Needed to create a new class to contain the campsites with marker objects to navigate through
      * the class
      */
-    private class CampsiteWithMarkers
+    private class CampsiteMarkersKeys
     {
         public Campsite site;
         public Marker camp_marker;
+        public String camp_key;
 
-        public CampsiteWithMarkers(Campsite site, Marker camp_marker)
+        public CampsiteMarkersKeys(Campsite site, Marker camp_marker, String camp_key)
         {
             this.site = site;
             this.camp_marker = camp_marker;
+            this.camp_key = camp_key;
         }
 
     }
@@ -134,7 +130,8 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
                         for(DataSnapshot snapshot: dataSnapshot.getChildren())
                         {
                             Campsite single_site = snapshot.getValue(Campsite.class);
-                            addMapPins(single_site);
+                            String site_key = snapshot.getKey();
+                            addMapPins(single_site,site_key);
                         }
 
 
@@ -166,14 +163,14 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
 
     }
 
-    public void addMapPins(Campsite site)
+    public void addMapPins(Campsite site, String site_key)
     {
         LatLng site_pin = new LatLng(site.latitude, site.longitude);
         String site_name = site.CampName;
         Marker mac = mMap.addMarker(new MarkerOptions().position(site_pin).title(site_name));
 
         //Add this to our list of campsites with markers to use on the widgets
-        CampsiteListWithMarkers.add(new CampsiteWithMarkers(site, mac));
+        CampsiteListWithMarkers.add(new CampsiteMarkersKeys(site, mac,site_key));
 
         //Set some callbacks, must go here vs on create
         mMap.setOnMarkerClickListener(this);
@@ -189,7 +186,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
     {
 
         //find the site associated with this marker
-        for (CampsiteWithMarkers site : CampsiteListWithMarkers)
+        for (CampsiteMarkersKeys site : CampsiteListWithMarkers)
         {
             if (0 == marker.getId().compareTo(site.camp_marker.getId()))
             {
@@ -238,47 +235,47 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
      */
     public void goToSiteActivity(View view)
     {
-        //TODO make this work somehow
-//        boolean passed = false;
-//        //first lets see if they picked something
-//        if (null != LastChosenMarker)
-//        {
-//            //yup, now we need to pass the info for the current campsite
-//            Intent intent = new Intent(this, CampsiteDetailsActivity.class);
-//            //Stole data sharing from this
-//            //https://www.thecrazyprogrammer.com/2016/12/pass-data-one-activity-another-in-android.html
-//
-//            String camp_id = "";
-//            for (CampsiteWithMarkers site : CampsiteListWithMarkers)
-//            {
-//                //Does the marker match the campsite in a list?
-//                if (0 == LastChosenMarker.getId().compareTo(site.camp_marker.getId()))
-//                {
-//                    camp_id = Integer.toString(site.site.CampId);
-//                    break;
-//                }
-//            }
-//            //Stole data sharing from this
-//            //https://www.thecrazyprogrammer.com/2016/12/pass-data-one-activity-another-in-android.html
-//            if (0 != camp_id.compareTo(""))
-//            {
-//
-//                intent.putExtra("theChosenId", camp_id);
-//                startActivity(intent);
-//                passed = true;
-//            }
-//
-//        }
-//
-//        if (!passed)
-//        {
-//            Context context = getApplicationContext();
-//            CharSequence text = "Please Choose a Site";
-//            int duration = Toast.LENGTH_SHORT;
-//
-//            Toast toast = Toast.makeText(context, text, duration);
-//            toast.show();
-//        }
+        boolean passed = false;
+        //first lets see if they picked something
+        if (null != LastChosenMarker)
+        {
+            //yup, now we need to pass the info for the current campsite
+            Intent intent = new Intent(this, CampsiteDetailsActivity.class);
+            //Stole data sharing from this
+            //https://www.thecrazyprogrammer.com/2016/12/pass-data-one-activity-another-in-android.html
+
+            String camp_key = "";
+            for (CampsiteMarkersKeys site : CampsiteListWithMarkers)
+            {
+                //Does the marker match the campsite in a list?
+                if (0 == LastChosenMarker.getId().compareTo(site.camp_marker.getId()))
+                {
+
+                    camp_key = site.camp_key;
+                    break;
+                }
+            }
+            //Stole data sharing from this
+            //https://www.thecrazyprogrammer.com/2016/12/pass-data-one-activity-another-in-android.html
+            if (0 != camp_key.compareTo(""))
+            {
+
+                intent.putExtra("theChosenId", camp_key);
+                startActivity(intent);
+                passed = true;
+            }
+
+        }
+
+        if (!passed)
+        {
+            Context context = getApplicationContext();
+            CharSequence text = "Please Choose a Site";
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
     }
 
 
@@ -302,7 +299,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
             camp_index = CampsiteListWithMarkers.size();
             if (camp_index > 0)
             {
-                CampsiteWithMarkers new_site = CampsiteListWithMarkers.get(camp_index-1);
+                CampsiteMarkersKeys new_site = CampsiteListWithMarkers.get(camp_index-1);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new_site.camp_marker.getPosition(),
                         16));
 
@@ -314,7 +311,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         }
         else
         {
-            for (CampsiteWithMarkers site_mark : CampsiteListWithMarkers)
+            for (CampsiteMarkersKeys site_mark : CampsiteListWithMarkers)
             {
                 if (0 == site_mark.camp_marker.getId().compareTo(LastChosenMarker.getId()))
                 {
@@ -336,7 +333,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
             {
                 //there is room to move to the next site, do that
                 camp_index--;
-                CampsiteWithMarkers new_site = CampsiteListWithMarkers.get(camp_index);
+                CampsiteMarkersKeys new_site = CampsiteListWithMarkers.get(camp_index);
 
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new_site.camp_marker.getPosition(),
                         16));
@@ -360,7 +357,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
     public void NextBtnClick(View view)
     {
         int camp_index = 0;
-        CampsiteWithMarkers the_current_site_mark = null;
+        CampsiteMarkersKeys the_current_site_mark = null;
         //They want to go to the next site so we're going to go through the list
         if (null == LastChosenMarker)
         {
@@ -382,7 +379,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         else
         {
             //Find the next campsite, no autowrap
-            for (CampsiteWithMarkers site_mark : CampsiteListWithMarkers)
+            for (CampsiteMarkersKeys site_mark : CampsiteListWithMarkers)
             {
                 if (0 == site_mark.camp_marker.getId().compareTo(LastChosenMarker.getId()))
                 {
@@ -402,7 +399,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
                 {
                     //there is room to move to the next site, do that
                     camp_index++;
-                    CampsiteWithMarkers new_site = CampsiteListWithMarkers.get(camp_index);
+                    CampsiteMarkersKeys new_site = CampsiteListWithMarkers.get(camp_index);
 
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new_site.camp_marker.getPosition(),
                             16));
