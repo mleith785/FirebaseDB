@@ -110,7 +110,7 @@ public class CampsiteDetailsActivity extends AppCompatActivity
         QueryUserRating(Camp_Key,mAuth.getUid());
 
         //Query if the user favorited this site.
-        //QueryUserFavorite(Camp_Key,mAuth.getUid());
+        QueryUserFavorite(Camp_Key,mAuth.getUid());
     }
 
     private void QueryCampOnId(String camp_key)
@@ -127,6 +127,7 @@ public class CampsiteDetailsActivity extends AppCompatActivity
 
                     DisHereCampsite = dataSnapshot.getValue(Campsite.class);
                     UpdateCampUIData();
+                    setImage(DisHereCampsite.Picture_Storage);
                 }
                 else
                 {
@@ -161,13 +162,28 @@ public class CampsiteDetailsActivity extends AppCompatActivity
              {
                  if (dataSnapshot.exists())
                  {
-
+                     //We have data for the user, now check if it matches the camp key
                      for(DataSnapshot snapshot: dataSnapshot.getChildren())
                      {
                          DisUserRating = snapshot.getValue(UserRating.class);
-                         UserRatingKey = dataSnapshot.getKey();
+                         UserRatingKey = snapshot.getKey();
+
+                         //We have a site that matched auth/user, now see if the camp id matches
+                         if( 0== DisUserRating.CampsiteKey.compareTo(camp_key))
+                         {
+                             UpdateCampUIData();
+                         }
+                         else
+                         {
+                             DisUserRating=null;
+                             UserRatingKey=null;
+                         }
+
+
                      }
-                     UpdateCampUIData();
+
+
+
                  }
                  else
                  {
@@ -192,9 +208,9 @@ public class CampsiteDetailsActivity extends AppCompatActivity
 
 
         Query query = FirebaseDatabase.getInstance().getReference("Favorites")
-                .equalTo(uid,"mAuth")
-                .equalTo(camp_key, "CampsiteKey");
-                //.limitToFirst(1);
+                .orderByChild("mAuth")
+                .equalTo(uid)
+                .limitToFirst(1);
         query.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -203,10 +219,26 @@ public class CampsiteDetailsActivity extends AppCompatActivity
                 boolean checked=false;
                 if (dataSnapshot.exists())
                 {
-                    //If we made it here, this is a favorite for that user.
-                    UserFavoriteKey = dataSnapshot.getKey();
-                    UserFavorite = dataSnapshot.getValue(UserFavorite.class);
-                    checked=true;
+                    //We found a record for this user, now check if it matches the camp_key
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren())
+                    {
+                        //If we made it here, this is a favorite for that user.
+                        UserFavoriteKey = snapshot.getKey();
+                        UserFavorite = snapshot.getValue(UserFavorite.class);
+
+                        //We have a site that matched auth/user, now see if the camp id matches
+                        if( 0== UserFavorite.CampsiteKey.compareTo(camp_key))
+                        {
+                            checked=true;
+                        }
+                        else
+                        {
+                            UserFavoriteKey=null;
+                            UserFavorite=null;
+                        }
+
+                    }
+
                 }
                 else
                 {
