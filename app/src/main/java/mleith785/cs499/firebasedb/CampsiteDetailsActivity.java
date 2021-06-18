@@ -153,42 +153,36 @@ public class CampsiteDetailsActivity extends AppCompatActivity
 
         Query query = FirebaseDatabase.getInstance().getReference("UserRatings")
                 .orderByChild("mAuth")
-                .equalTo(uid)
-                .limitToFirst(1);
+                .equalTo(uid);
         query.addListenerForSingleValueEvent(new ValueEventListener()
          {
              @Override
              public void onDataChange (DataSnapshot dataSnapshot)
              {
+                 boolean campsite_exists = false;
                  if (dataSnapshot.exists())
                  {
                      //We have data for the user, now check if it matches the camp key
                      for(DataSnapshot snapshot: dataSnapshot.getChildren())
                      {
-                         DisUserRating = snapshot.getValue(UserRating.class);
-                         UserRatingKey = snapshot.getKey();
 
+                         UserRating rating = snapshot.getValue(UserRating.class);
                          //We have a site that matched auth/user, now see if the camp id matches
-                         if( 0== DisUserRating.CampsiteKey.compareTo(camp_key))
+                         if( 0== rating.CampsiteKey.compareTo(Camp_Key) && !campsite_exists)
                          {
+                             UserRatingKey = snapshot.getKey();
+                             DisUserRating = rating;
                              UpdateCampUIData();
+                             campsite_exists = true;
                          }
-                         else
-                         {
-                             DisUserRating=null;
-                             UserRatingKey=null;
-                         }
-
 
                      }
-
-
-
                  }
-                 else
+
+                 if(!campsite_exists)
                  {
                      //They never had a user rating so just set it to naught
-                     DisUserRating = new UserRating(camp_key,(float)0.0,mAuth.getUid());
+                     DisUserRating = new UserRating(Camp_Key,(float)0.0,mAuth.getUid());
                      UserRatingKey=null;
                  }
 
@@ -209,8 +203,7 @@ public class CampsiteDetailsActivity extends AppCompatActivity
 
         Query query = FirebaseDatabase.getInstance().getReference("Favorites")
                 .orderByChild("mAuth")
-                .equalTo(uid)
-                .limitToFirst(1);
+                .equalTo(uid);
         query.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -222,27 +215,24 @@ public class CampsiteDetailsActivity extends AppCompatActivity
                     //We found a record for this user, now check if it matches the camp_key
                     for(DataSnapshot snapshot: dataSnapshot.getChildren())
                     {
-                        //If we made it here, this is a favorite for that user.
-                        UserFavoriteKey = snapshot.getKey();
-                        UserFavorite = snapshot.getValue(UserFavorite.class);
-
+                        UserFavorite fav = snapshot.getValue(UserFavorite.class);
                         //We have a site that matched auth/user, now see if the camp id matches
-                        if( 0== UserFavorite.CampsiteKey.compareTo(camp_key))
+                        if( 0== fav.CampsiteKey.compareTo(Camp_Key) && !checked)
                         {
                             checked=true;
-                        }
-                        else
-                        {
-                            UserFavoriteKey=null;
-                            UserFavorite=null;
+                            //If we made it here, this is a favorite for that user.
+                            UserFavoriteKey = snapshot.getKey();
+                            UserFavorite =  fav;
+
                         }
 
                     }
 
                 }
-                else
+                if(!checked)
                 {
                     UserFavoriteKey = null;
+                    UserFavorite = null;
                 }
 
                 CampDetailFavoriteGui.setChecked(checked);
