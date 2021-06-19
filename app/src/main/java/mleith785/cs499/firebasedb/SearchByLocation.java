@@ -175,7 +175,8 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
         //Add the search criteria using firebase
         Query query = FirebaseDatabase.getInstance().getReference("Campsites")
                 .orderByChild("CampCity")
-                .equalTo(CityName);
+                .equalTo(CityName)
+                .limitToFirst(1);
 
         query.addListenerForSingleValueEvent(new ValueEventListener(){
 
@@ -188,8 +189,6 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
                     {
                         Intent intent = new Intent(getApplicationContext(), MapListNavActivity.class);
                         intent.putExtra("Called By", "search");
-                        //TODO need to make this work better too
-
                         intent.putExtra("CityStr", CityName);
                         startActivity(intent);
                     }

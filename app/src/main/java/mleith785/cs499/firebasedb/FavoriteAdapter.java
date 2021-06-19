@@ -52,7 +52,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     {
         final FavoriteListItem list_item = ListItems.get(position);
         holder.textViewHead.setText(list_item.getCampsiteName());
-        holder.textViewDesc.setText("City: "+list_item.getCampsiteCity() + " ID: " + list_item.getCampsiteKey());
+        holder.textViewDesc.setText("City: "+list_item.getCampsiteCity());
 
     }
 

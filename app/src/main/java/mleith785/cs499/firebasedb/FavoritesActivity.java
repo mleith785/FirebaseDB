@@ -88,21 +88,25 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteAdap
                         FavoriteListItem item = snapshot.getValue(FavoriteListItem.class);
                         FavList.add(item);
                     }
-                    UpdateRecyclerHelper();
+
                 }
                 else
                 {
-                    int duration = Toast.LENGTH_SHORT;
+                    int duration = Toast.LENGTH_LONG;
                     Context context = getApplicationContext();
-                    Toast toast = Toast.makeText(context, "No Campsites Found! Press Back", duration);
+                    Toast toast = Toast.makeText(context, "No Campsites Found! Add some Favorites", duration);
                     toast.show();
                 }
+                UpdateRecyclerHelper();
             }
 
             @Override
             public void onCancelled (DatabaseError error)
             {
-                //TODO filll this out with a toast
+                int duration = Toast.LENGTH_LONG;
+                Context context = getApplicationContext();
+                Toast toast = Toast.makeText(context, "Problem reading Database.", duration);
+                toast.show();
             }
         });
     }
@@ -168,8 +172,8 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteAdap
         if (requestCode == LAUNCH_SECOND_ACTIVITY) {
             if(resultCode == Activity.RESULT_OK){
                 //They hit the backbutton, we have to update our recycler view in case they
-                //unchecked a favorite.
-                UpdateRecyclerHelper();
+                //unchecked a favorite.  We do this with a favorite query again
+                QueryUserFavorites(mAuth.getUid());
 
             }
 
