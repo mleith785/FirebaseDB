@@ -163,7 +163,9 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:ellipsize="none"
-                            android:maxLines="100"
+                            android:maxLines="4"
+                            android:minLines="4"
+                            android:scrollbars="vertical"
                             android:scrollHorizontally="false"
                             android:text="" />
                     </TableRow>
