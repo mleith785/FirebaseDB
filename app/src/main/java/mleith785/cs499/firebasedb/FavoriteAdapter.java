@@ -123,6 +123,6 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
      */
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View view, int position, int campsite_id);
+        void onItemClick(View view, int position, String campsite_key);
     }
 }

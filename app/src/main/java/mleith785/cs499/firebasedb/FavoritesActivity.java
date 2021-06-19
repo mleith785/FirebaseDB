@@ -137,12 +137,12 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteAdap
     //The crazy custom onclick handling was taken from here
     //https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
     @Override
-    public void onItemClick(View view, int position,int campsite_id) {
+    public void onItemClick(View view, int position,String campsite_key) {
         //Create an activity for the details and pass the ID of the campsite to that
         // activity
         Intent intent = new Intent(this, CampsiteDetailsActivity.class);
         //Pass the id of what they chose from the favorites list to the activity
-        intent.putExtra("theChosenId", Integer.toString(campsite_id));
+        intent.putExtra("theChosenId", campsite_key);
 
         //In this case, we launch the detail activity looking for a result.  Basically I want
         //to detect if they press the back button so that we can refresh the favorites list.
