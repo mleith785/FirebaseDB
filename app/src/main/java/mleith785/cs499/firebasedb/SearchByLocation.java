@@ -208,7 +208,10 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
             @Override
             public void onCancelled(DatabaseError error)
             {
-                //TODO filll this out with a toast
+                int duration = Toast.LENGTH_SHORT;
+                Context context = getApplicationContext();
+                Toast toast = Toast.makeText(context, "Error Reading Firebase", duration);
+                toast.show();
             }
         });
 

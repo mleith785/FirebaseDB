@@ -5,14 +5,18 @@ public class FavoriteListItem
 {
     private String CampsiteName;
     private String CampsiteCity;
-    private int CampsiteId;
+    private String CampsiteKey;
 
+    public FavoriteListItem()
+    {
 
-    public FavoriteListItem(String CampsiteName, String CampsiteCity, int CampsiteId)
+    }
+
+    public FavoriteListItem(String CampsiteName, String CampsiteCity, String CampsiteKey)
     {
         this.CampsiteName = CampsiteName;
         this.CampsiteCity = CampsiteCity;
-        this.CampsiteId = CampsiteId;
+        this.CampsiteKey = CampsiteKey;
     }
 
     public String getCampsiteName()
@@ -25,8 +29,8 @@ public class FavoriteListItem
         return CampsiteCity;
     }
 
-    public int getCampsiteId()
+    public String getCampsiteKey()
     {
-        return CampsiteId;
+        return CampsiteKey;
     }
 }

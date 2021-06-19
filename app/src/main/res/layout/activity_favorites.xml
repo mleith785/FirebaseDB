@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FavoritesActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- taken from
+             https://www.youtube.com/watch?v=Nw9JF55LDzE
+             -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RecyclerViewGui"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="4dp"
+            android:scrollbars="vertical"
+            android:background="@android:color/darker_gray"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
