@@ -178,29 +178,38 @@
                         android:id="@+id/CampPrevNavMapGui"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:text="Previous"
+                        android:layout_gravity="center"
+                        android:layout_margin="2dp"
                         android:layout_weight="1"
-                        android:onClick="PreviousBtnClick"/>
+                        android:background="@color/purple_500"
+                        android:onClick="PreviousBtnClick"
+                        android:text="Previous"
+                        android:textColor="@color/white" />
 
                     <Button
                         android:id="@+id/CampChoosenNavMapBtnGui"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Choose Site"
+                        android:layout_margin="2dp"
                         android:layout_weight="1"
-                        android:onClick="goToSiteActivity"/>
-
+                        android:background="@color/purple_500"
+                        android:onClick="goToSiteActivity"
+                        android:text="Choose Site"
+                        android:textColor="@color/white" />
 
 
                     <Button
                         android:id="@+id/CampNextNavMapGui"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Next"
+                        android:layout_gravity="center"
+                        android:layout_margin="2dp"
                         android:layout_weight="1"
-                        android:onClick="NextBtnClick"/>
+                        android:background="@color/purple_500"
+                        android:onClick="NextBtnClick"
+                        android:text="Next"
+                        android:textColor="@color/white" />
 
 
                 </LinearLayout>

@@ -4,12 +4,11 @@ package mleith785.cs499.firebasedb;
 
 import androidx.fragment.app.FragmentActivity;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
+
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
