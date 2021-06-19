@@ -132,7 +132,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteAdap
      * class.
      * @param view
      * @param position
-     * @param campsite_id
+     * @param campsite_key
      */
     //The crazy custom onclick handling was taken from here
     //https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example

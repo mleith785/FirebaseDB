@@ -346,7 +346,10 @@ public class CampsiteDetailsActivity extends AppCompatActivity
             {
                 //nope, they need a new key
                 UserFavoriteKey = UUID.randomUUID().toString();
-                UserFavorite = new UserFavorite(Camp_Key, mAuth.getUid());
+                UserFavorite = new UserFavorite(Camp_Key,
+                        DisHereCampsite.CampName,
+                        DisHereCampsite.CampCity,
+                        mAuth.getUid());
             }
 
             //write the DB, if they had one it would just replace the one already up there
