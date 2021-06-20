@@ -1,6 +1,7 @@
 package mleith785.cs499.firebasedb;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -15,6 +16,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -24,10 +26,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
+
+import static android.content.ContentValues.TAG;
 
 public class AddSiteSaveActivity extends AppCompatActivity implements AddSiteDialogFrag.NoticeDialogListener
 {
@@ -46,7 +62,15 @@ public class AddSiteSaveActivity extends AppCompatActivity implements AddSiteDia
     private Button AddSitePictureButton;
     private Button AddSiteRotatePicButton;
 
+
+
     private static final int REQUEST_IMAGE_CAPTURE = 101;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+
+    //For storing campsite images
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
 
     /**
      * <h1> onCreate</h1>
@@ -88,6 +112,14 @@ public class AddSiteSaveActivity extends AppCompatActivity implements AddSiteDia
 
         //Hide this at start, no picture avail
         AddSiteRotatePicButton.setVisibility(View.GONE);
+
+        //Grab references for the firebase database
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("Campsites");
+
+        //Campsite pictures go into firebase storage
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
 
     }
@@ -180,10 +212,9 @@ public class AddSiteSaveActivity extends AppCompatActivity implements AddSiteDia
     public void onDialogPositiveClick(DialogFragment dialog)
     {
 
+
         Campsite new_site = new Campsite();
         new_site.CampName = AddCampsiteNameGui.getText().toString();
-        //todo this should be cleaned on this but I left it so the old code doesn't bust
-        new_site.CampLoc = "dummy column";
         new_site.FeatRiverside = RiversideAddGuiCB.isChecked();
         new_site.FeatGrill = GrillAddGuiCB.isChecked();
         new_site.FeatRestroom = RestroomAddGuiCB.isChecked();
@@ -211,24 +242,24 @@ public class AddSiteSaveActivity extends AppCompatActivity implements AddSiteDia
             city = "No City";
         }
 
+
         new_site.CampCity = city;
 
-        //TODO need to fix
-//        if (null != CampImageAddGui.getDrawable())
-//        {
-//
-//            new_site.BM = ((BitmapDrawable)CampImageAddGui.getDrawable()).getBitmap();
-//
-//        }
-//        else
-//        {
-//            new_site.BM = null;
-//        }
-//
-//
-//        //OK now write this to the database
-//        CampsiteDbHelper dbHandler = new CampsiteDbHelper(this, null, null, 1);
-//        dbHandler.AddCampsite(new_site);
+        if (null != CampImageAddGui.getDrawable())
+        {
+            final String randomKey = UUID.randomUUID().toString();
+            final String base_path = "campsite_images/";
+            String path_to_write = base_path + randomKey+".jpeg";
+            new_site.Picture_Storage=path_to_write;
+            Upload_image(path_to_write);
+        }
+
+        //Firebase get a key for the data
+        String new_add_id = myRef.push().getKey();
+        //Now write to the database
+        myRef.child(new_add_id).setValue(new_site);
+
+        Toast.makeText(this, "campsite added", Toast.LENGTH_LONG).show();
 
         //Now toast that they added this thing and hide the button
         int duration = Toast.LENGTH_SHORT;
@@ -244,6 +275,40 @@ public class AddSiteSaveActivity extends AppCompatActivity implements AddSiteDia
         GrillAddGuiCB.setEnabled(false);
         RestroomAddGuiCB.setEnabled(false);
         AddSitePictureButton.setEnabled(false);
+        AddSiteRotatePicButton.setEnabled(false);
+    }
+
+
+    private void Upload_image(String storage_path)
+    {
+        Bitmap BM;
+        BM = ((BitmapDrawable)CampImageAddGui.getDrawable()).getBitmap();
+
+        StorageReference riversRefRef = storageReference.child(storage_path);
+
+        //Taken from
+        //https://firebase.google.com/docs/storage/android/upload-files
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BM.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        UploadTask uploadTask = riversRefRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull @NotNull Exception e)
+            {
+                Log.w(TAG, "failed to upload picture");
+                Toast.makeText(getApplicationContext(),"Failed to upload", Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
+        {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+            {
+
+                Snackbar.make(findViewById(android.R.id.content),"Image Uploaded.",Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**

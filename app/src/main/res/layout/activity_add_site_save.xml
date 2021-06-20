@@ -12,19 +12,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
+
         <ImageView
             android:id="@+id/CampImageAddGui"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:minHeight="250dp"/>
+            android:minHeight="250dp" />
 
         <Button
             android:id="@+id/AddSitePictureButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Take Picture"
-            android:onClick="TakePictureOfSite"/>
+            android:onClick="TakePictureOfSite"
+            ><requestFocus/></Button>
 
         <Button
             android:id="@+id/AddSiteRotatePicButton"
@@ -72,7 +74,6 @@
             android:layout_height="wrap_content">
 
 
-
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
@@ -107,7 +108,7 @@
                     android:id="@+id/RiversideAddGuiCB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Riverside"/>
+                    android:text="Riverside" />
 
             </TableRow>
 
@@ -138,7 +139,7 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/textView21"

@@ -9,7 +9,6 @@ public class Campsite
 {
     public String CampName;
     public String CampCity;
-    public String CampLoc;
     public float AvgRating;
     public boolean FeatRiverside;
     public boolean FeatGrill;
@@ -23,7 +22,6 @@ public class Campsite
     {
         CampName = "";
         CampCity = "";
-        CampLoc = "";
         AvgRating = (float) 0.0;
         FeatRiverside = false;
         FeatGrill = false;
@@ -40,7 +38,6 @@ public class Campsite
 
         CampName = name;
         CampCity = city;
-        CampLoc = loc;
         AvgRating = avg_rating;
         FeatRiverside = feat_river;
         FeatGrill = feat_g;

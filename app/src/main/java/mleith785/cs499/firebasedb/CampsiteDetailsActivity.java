@@ -141,7 +141,11 @@ public class CampsiteDetailsActivity extends AppCompatActivity
             @Override
             public void onCancelled (DatabaseError error)
             {
-                //TODO filll this out with a toast
+                int duration = Toast.LENGTH_SHORT;
+                Context context = getApplicationContext();
+                Toast toast = Toast.makeText(context, "No Campsites Found! Press Back", duration);
+                toast.show();
+                Log.w(TAG, "failed to find campsite");
             }
         });
     }
@@ -242,7 +246,8 @@ public class CampsiteDetailsActivity extends AppCompatActivity
             @Override
             public void onCancelled (DatabaseError error)
             {
-                //TODO filll this out with a toast
+                Log.w(TAG, "No Favorite found");
+
             }
         });
     }

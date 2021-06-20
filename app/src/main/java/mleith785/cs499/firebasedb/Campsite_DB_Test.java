@@ -154,7 +154,6 @@ public class Campsite_DB_Test extends AppCompatActivity
 
         CurrentCampsite.CampName = CampsiteNameGui.getText().toString();
         CurrentCampsite.CampCity = CampsiteCityGui.getText().toString();
-        CurrentCampsite.CampLoc = CampsiteLocationGui.getText().toString();
         //CurrentCampsite.AvgRating = CampsiteAvgRatingGui.value;
         CurrentCampsite.FeatRiverside =  RiversideCBGui.isChecked();
         CurrentCampsite.FeatGrill = GrillCBGui.isChecked();
@@ -274,7 +273,6 @@ public class Campsite_DB_Test extends AppCompatActivity
             CampsiteIdGui.setText(campsite_key);
             CampsiteNameGui.setText(campsite.CampName);
             CampsiteCityGui.setText(campsite.CampCity);
-            CampsiteLocationGui.setText(campsite.CampLoc);
             CampsiteAvgRatingGui.setText(String.valueOf(campsite.AvgRating));
             RiversideCBGui.setChecked(campsite.FeatRiverside);
             GrillCBGui.setChecked(campsite.FeatGrill);
