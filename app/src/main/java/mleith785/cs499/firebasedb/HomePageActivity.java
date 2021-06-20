@@ -99,9 +99,8 @@ public class HomePageActivity extends AppCompatActivity
                 }
                 else
                 {
-                    //TODO: bring this in later
-//                    Intent intent = new Intent(this, AddSiteMapActivity.class);
-//                    startActivity(intent);
+                    Intent intent = new Intent(this, AddSiteMapActivity.class);
+                    startActivity(intent);
                 }
 
 
