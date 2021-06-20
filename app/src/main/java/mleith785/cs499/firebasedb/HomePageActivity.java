@@ -48,9 +48,9 @@ public class HomePageActivity extends AppCompatActivity
      */
     public void SearchNameCityLocClick(View view)
     {
-        //todo bring this in later
-//        Intent intent = new Intent(this, SearchByNameCityFeat.class);
-//        startActivity(intent);
+
+        Intent intent = new Intent(this, SearchByNameCityFeat.class);
+        startActivity(intent);
 
     }
 

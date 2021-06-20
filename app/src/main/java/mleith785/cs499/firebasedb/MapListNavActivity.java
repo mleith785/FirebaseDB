@@ -35,7 +35,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
 
     private GoogleMap mMap;
     //Use this to get the list from the DB handler
-    private List<CampsiteMarkersKeys> CampsiteListWithMarkers;
+    private List<CampsiteMarkersKeys> CampsiteListWithMarkersAndKeys;
 
     private TextView CampNameNavMapGui;
     private TextView CampNameCityMapGui;
@@ -45,6 +45,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
     private TextView CampFeatureNavMapGui;
     private TextView CampDetailsNavMapGui;
     private Marker LastChosenMarker;
+    private CampSearchCriteria CampCriteria;
     /**
      * <h1>Private class only used here for managing sites</h1>
      * Needed to create a new class to contain the campsites with marker objects to navigate through
@@ -89,7 +90,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         CampAverageRatingMapGui = findViewById(R.id.CampAverageRatingMapGui);
         CampFeatureNavMapGui = findViewById(R.id.CampFeatureNavMapGui);
         CampDetailsNavMapGui = findViewById(R.id.CampDetailsNavMapGui);
-        CampsiteListWithMarkers = new ArrayList<>();
+        CampsiteListWithMarkersAndKeys = new ArrayList<>();
 
 
     }
@@ -118,42 +119,20 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
             //This activity passes us a search object, so lets get that
             //This serializable bidness taken from
             //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
+            CampCriteria = (CampSearchCriteria)i.getSerializableExtra("CampSearchObj");
+            query_by_search_criteria(CampCriteria);
+
+        }
+        else
+        {
+            //we were called by the search activity.
+            //This activity passes us a search object, so lets get that
+            //This serializable bidness taken from
+            //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
             CityName = (String)i.getSerializableExtra("CityStr");
-            Query query = FirebaseDatabase.getInstance().getReference("Campsites")
-                    .orderByChild("CampCity")
-                    .equalTo(CityName);
+            query_by_city(CityName);
 
-            query.addListenerForSingleValueEvent(new ValueEventListener(){
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot)
-                {
-                    if( dataSnapshot.exists())
-                    {
-                        for(DataSnapshot snapshot: dataSnapshot.getChildren())
-                        {
-                            Campsite single_site = snapshot.getValue(Campsite.class);
-                            String site_key = snapshot.getKey();
-                            addMapPins(single_site,site_key);
-                        }
-
-
-                    }
-                    else
-                    {
-                        int duration = Toast.LENGTH_SHORT;
-                        Context context = getApplicationContext();
-                        Toast toast = Toast.makeText(context, "No Campsites Found!", duration);
-                        toast.show();
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error)
-                {
-                    //TODO filll this out with a toast
-                }
-            });
-                                                 }
+        }
         // Move to the default TC-612 area
         LatLng Twin_Cities = new LatLng(44.978905, -93.2658082);
 
@@ -165,6 +144,94 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
 
     }
 
+
+    public void query_by_city(String CityName)
+    {
+        Query query = FirebaseDatabase.getInstance().getReference("Campsites")
+                .orderByChild("CampCity")
+                .equalTo(CityName);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if( dataSnapshot.exists())
+                {
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren())
+                    {
+                        Campsite single_site = snapshot.getValue(Campsite.class);
+                        String site_key = snapshot.getKey();
+                        addMapPins(single_site,site_key);
+                    }
+
+
+                }
+                else
+                {
+                    int duration = Toast.LENGTH_SHORT;
+                    Context context = getApplicationContext();
+                    Toast toast = Toast.makeText(context, "No Campsites Found!", duration);
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error)
+            {
+                //TODO filll this out with a toast
+            }
+        });
+    }
+
+    public void query_by_search_criteria(CampSearchCriteria searchy)
+    {
+        Query query = FirebaseDatabase.getInstance().getReference("Campsites");
+
+        query.addListenerForSingleValueEvent(new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if( dataSnapshot.exists())
+                {
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren())
+                    {
+                        Campsite site = snapshot.getValue(Campsite.class);
+                        if(
+                                (0==searchy.getCampName().compareTo("") ||
+                                    0==searchy.getCampName().compareTo(site.CampName)) &&
+                                (0==searchy.getCampCity().compareTo("") ||
+                                        0==searchy.getCampCity().compareTo(site.CampCity)) &&
+                                ((searchy.isFeatureGrill() && site.FeatGrill ||!searchy.isFeatureGrill()) &&
+                                        (searchy.isFeatureRestroom() && site.FeatRestroom || !searchy.isFeatureRestroom()) &&
+                                        (searchy.isFeatureRiverside() && site.FeatRiverside) || !searchy.isFeatureRiverside())
+                        )
+                        {
+
+                            String site_key = snapshot.getKey();
+                            addMapPins(site, site_key);
+                        }
+                    }
+
+
+                }
+                else
+                {
+                    int duration = Toast.LENGTH_SHORT;
+                    Context context = getApplicationContext();
+                    Toast toast = Toast.makeText(context, "No Campsites Found!", duration);
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error)
+            {
+                //TODO filll this out with a toast
+            }
+        });
+    }
+
+
     public void addMapPins(Campsite site, String site_key)
     {
         LatLng site_pin = new LatLng(site.latitude, site.longitude);
@@ -172,7 +239,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         Marker mac = mMap.addMarker(new MarkerOptions().position(site_pin).title(site_name));
 
         //Add this to our list of campsites with markers to use on the widgets
-        CampsiteListWithMarkers.add(new CampsiteMarkersKeys(site, mac,site_key));
+        CampsiteListWithMarkersAndKeys.add(new CampsiteMarkersKeys(site, mac,site_key));
 
         //Set some callbacks, must go here vs on create
         mMap.setOnMarkerClickListener(this);
@@ -188,7 +255,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
     {
 
         //find the site associated with this marker
-        for (CampsiteMarkersKeys site : CampsiteListWithMarkers)
+        for (CampsiteMarkersKeys site : CampsiteListWithMarkersAndKeys)
         {
             if (0 == marker.getId().compareTo(site.camp_marker.getId()))
             {
@@ -247,7 +314,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
             //https://www.thecrazyprogrammer.com/2016/12/pass-data-one-activity-another-in-android.html
 
             String camp_key = "";
-            for (CampsiteMarkersKeys site : CampsiteListWithMarkers)
+            for (CampsiteMarkersKeys site : CampsiteListWithMarkersAndKeys)
             {
                 //Does the marker match the campsite in a list?
                 if (0 == LastChosenMarker.getId().compareTo(site.camp_marker.getId()))
@@ -298,10 +365,10 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         {
             //They never chose a site, that is fine, we just start at the end.  OK to start
             //with size being index +1 since we decrement upon the discovery of the site
-            camp_index = CampsiteListWithMarkers.size();
+            camp_index = CampsiteListWithMarkersAndKeys.size();
             if (camp_index > 0)
             {
-                CampsiteMarkersKeys new_site = CampsiteListWithMarkers.get(camp_index-1);
+                CampsiteMarkersKeys new_site = CampsiteListWithMarkersAndKeys.get(camp_index-1);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new_site.camp_marker.getPosition(),
                         16));
 
@@ -313,7 +380,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         }
         else
         {
-            for (CampsiteMarkersKeys site_mark : CampsiteListWithMarkers)
+            for (CampsiteMarkersKeys site_mark : CampsiteListWithMarkersAndKeys)
             {
                 if (0 == site_mark.camp_marker.getId().compareTo(LastChosenMarker.getId()))
                 {
@@ -335,7 +402,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
             {
                 //there is room to move to the next site, do that
                 camp_index--;
-                CampsiteMarkersKeys new_site = CampsiteListWithMarkers.get(camp_index);
+                CampsiteMarkersKeys new_site = CampsiteListWithMarkersAndKeys.get(camp_index);
 
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new_site.camp_marker.getPosition(),
                         16));
@@ -365,9 +432,9 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         {
             //They never chose a campsite, that is fine, we just start at the beginning
             //They should always have 1 site but just in case
-            if(CampsiteListWithMarkers.size() > 0)
+            if(CampsiteListWithMarkersAndKeys.size() > 0)
             {
-                the_current_site_mark = CampsiteListWithMarkers.get(0);
+                the_current_site_mark = CampsiteListWithMarkersAndKeys.get(0);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(the_current_site_mark.camp_marker.getPosition(),
                         16));
 
@@ -381,7 +448,7 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
         else
         {
             //Find the next campsite, no autowrap
-            for (CampsiteMarkersKeys site_mark : CampsiteListWithMarkers)
+            for (CampsiteMarkersKeys site_mark : CampsiteListWithMarkersAndKeys)
             {
                 if (0 == site_mark.camp_marker.getId().compareTo(LastChosenMarker.getId()))
                 {
@@ -397,11 +464,11 @@ public class MapListNavActivity extends FragmentActivity implements OnMapReadyCa
             if (null != the_current_site_mark)
             {
                 //Move onto the next one if we have it
-                if (camp_index < CampsiteListWithMarkers.size() - 1)
+                if (camp_index < CampsiteListWithMarkersAndKeys.size() - 1)
                 {
                     //there is room to move to the next site, do that
                     camp_index++;
-                    CampsiteMarkersKeys new_site = CampsiteListWithMarkers.get(camp_index);
+                    CampsiteMarkersKeys new_site = CampsiteListWithMarkersAndKeys.get(camp_index);
 
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new_site.camp_marker.getPosition(),
                             16));

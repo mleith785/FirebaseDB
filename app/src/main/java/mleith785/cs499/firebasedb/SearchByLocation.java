@@ -188,7 +188,7 @@ public class SearchByLocation extends AppCompatActivity  implements LocationList
                     for(DataSnapshot snapshot: dataSnapshot.getChildren())
                     {
                         Intent intent = new Intent(getApplicationContext(), MapListNavActivity.class);
-                        intent.putExtra("Called By", "search");
+                        intent.putExtra("Called By", "Location_search");
                         intent.putExtra("CityStr", CityName);
                         startActivity(intent);
                     }

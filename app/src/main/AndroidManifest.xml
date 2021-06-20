@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FirebaseDB">
-        <activity android:name=".AddSiteSaveActivity"></activity>
+        <activity android:name=".SearchByNameCityFeat"></activity>
+        <activity android:name=".AddSiteSaveActivity" />
         <activity android:name=".AddSiteMapActivity" />
         <activity android:name=".FavoritesActivity" />
         <activity android:name=".CampsiteDetailsActivity" />
